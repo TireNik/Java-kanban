@@ -22,15 +22,15 @@ public class Main {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        SubTask subTask1_1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.DONE, 3);
-        SubTask subTask1_2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.DONE, 3);
+        SubTask subTask1  = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.DONE, 3);
+        SubTask subTask2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.DONE, 3);
 
-        taskManager.addSubtask(subTask1_1);
-        taskManager.addSubtask(subTask1_2);
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
 
-        SubTask subTask2_1 = new SubTask(7, "2_1 подзадача", "2_1 описание подхадачи", Progress.IN_PROGRESS, 4);
+        SubTask subTask3 = new SubTask(7, "2_1 подзадача", "2_1 описание подхадачи", Progress.IN_PROGRESS, 4);
 
-        taskManager.addSubtask(subTask2_1);
+        taskManager.addSubtask(subTask3);
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpics());
@@ -72,15 +72,15 @@ public class Main {
         taskManager.updateEpic(updateEpic1);
         taskManager.updateEpic(updateEpic2);
 
-        SubTask updateSubTask1_1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.NEW, 3);
-        SubTask updateSubTask1_2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.NEW, 3);
+        SubTask updateSubTask1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.NEW, 3);
+        SubTask updateSubTask2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.NEW, 3);
 
-        taskManager.updateSubtask(updateSubTask1_1);
-        taskManager.updateSubtask(updateSubTask1_2);
+        taskManager.updateSubtask(updateSubTask1);
+        taskManager.updateSubtask(updateSubTask2);
 
-        SubTask updateSubTask2_1 = new SubTask(7, "2_1 должна удалиться подзадача", "2_1 описание подхадачи", Progress.DONE, 4);
+        SubTask updateSubTask3 = new SubTask(7, "2_1 должна удалиться подзадача", "2_1 описание подхадачи", Progress.DONE, 4);
 
-        taskManager.updateSubtask(updateSubTask2_1);
+        taskManager.updateSubtask(updateSubTask3);
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpics());
@@ -94,8 +94,8 @@ public class Main {
         System.out.println(taskManager.deleteSubtaskForId(5));
         System.out.println(taskManager.deleteSubtaskForId(7));
 
-        SubTask updateSubTask3 = new SubTask(5, "333", "1_1 описание подзадачи", Progress.NEW, 4);
-        taskManager.addSubtask(updateSubTask3);
+        SubTask updateSubTask4 = new SubTask(5, "333", "1_1 описание подзадачи", Progress.NEW, 4);
+        taskManager.addSubtask(updateSubTask4);
 
 
         System.out.println(taskManager.getAllTasks());
