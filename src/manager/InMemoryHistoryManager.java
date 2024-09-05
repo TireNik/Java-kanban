@@ -20,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if(nodeMap.containsKey(id)){
+        if (nodeMap.containsKey(id)) {
             removeNode(nodeMap.get(id));
         }
     }
@@ -33,7 +33,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (nodeMap.containsKey(task.getId())){
+        if (nodeMap.containsKey(task.getId())) {
             removeNode(nodeMap.get(task.getId()));
         }
         linkLast(task);

@@ -2,10 +2,10 @@ package tasks;
 
 import java.util.Objects;
 
-public class Task implements Cloneable{
+public class Task implements Cloneable {
     private Integer id;
-    private  String name;
-    private  String description;
+    private String name;
+    private String description;
     private Progress status;
 
     public Task(Integer id, String name, String description, Progress status) {
