@@ -7,9 +7,8 @@ import Tasks.Task;
 
 public class Main {
 
-    public static void main(String[] args) throws CloneNotSupportedException {
+    public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-
 
         Task task1 = new Task(1, "1 Задача", "1 описание", Progress.NEW);
         Task task2 = new Task(2, "2 Задача", "2 описание", Progress.NEW);
@@ -44,7 +43,19 @@ public class Main {
         System.out.println(taskManager.getTaskById(1));
 
         System.out.println("___________");
-        System.out.println("История просмотров: " + taskManager.getHistory());
+        System.out.println("___________");
+        System.out.println(taskManager.getTaskById(1));
+        System.out.println(taskManager.getTaskById(1));
+        System.out.println(taskManager.getTaskById(2));
+        System.out.println(taskManager.getEpicById(3));
+        System.out.println(taskManager.getHistory());
+
+        taskManager.remove(1);
+        taskManager.remove(2);
+        taskManager.remove(3);
+
+        System.out.println(taskManager.getHistory());
+
         System.out.println("___________");
         System.out.println("___________");
 
