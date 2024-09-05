@@ -1,8 +1,8 @@
-package Test;
+package test;
 
-import Manager.InMemoryHistoryManager;
-import Tasks.Progress;
-import Tasks.Task;
+import manager.InMemoryHistoryManager;
+import tasks.Progress;
+import tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
