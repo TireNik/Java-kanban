@@ -38,21 +38,25 @@ public class Main {
 
         System.out.println("___________");
 
+        System.out.println(taskManager.getSubtaskById(7));
         System.out.println(taskManager.getEpicById(3));
+        taskManager.getSubtasksByEpic(3);
         System.out.println("История просмотров: " + taskManager.getHistory());
         System.out.println(taskManager.getTaskById(1));
 
         System.out.println("___________");
         System.out.println("___________");
         System.out.println(taskManager.getTaskById(1));
-        System.out.println(taskManager.getTaskById(1));
         System.out.println(taskManager.getTaskById(2));
         System.out.println(taskManager.getEpicById(3));
+        System.out.println(taskManager.getSubtaskById(7));
         System.out.println(taskManager.getHistory());
 
-        taskManager.remove(1);
-        taskManager.remove(2);
-        taskManager.remove(3);
+        taskManager.deleteTaskById(1);
+        taskManager.deleteTaskById(2);
+        taskManager.deleteEpicById(3);
+        taskManager.deleteSubtaskForId(7);
+
 
         System.out.println(taskManager.getHistory());
 
