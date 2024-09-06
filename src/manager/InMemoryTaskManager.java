@@ -232,7 +232,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         List<Integer> taskIds = new ArrayList<>(taskMap.keySet());
         taskMap.clear();
-        for(Integer id : taskIds) {
+        for (Integer id : taskIds) {
             historyManager.remove(id);
         }
     }
@@ -262,6 +262,5 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(epic);
         }
     }
-
 
 }
