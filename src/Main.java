@@ -1,15 +1,14 @@
-import Manager.Managers;
-import Manager.TaskManager;
-import Tasks.Epic;
-import Tasks.Progress;
-import Tasks.SubTask;
-import Tasks.Task;
+import manager.Managers;
+import manager.TaskManager;
+import tasks.Epic;
+import tasks.Progress;
+import tasks.SubTask;
+import tasks.Task;
 
 public class Main {
 
-    public static void main(String[] args) throws CloneNotSupportedException {
+    public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-
 
         Task task1 = new Task(1, "1 Задача", "1 описание", Progress.NEW);
         Task task2 = new Task(2, "2 Задача", "2 описание", Progress.NEW);
@@ -23,15 +22,15 @@ public class Main {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        SubTask subTask1_1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.DONE, 3);
-        SubTask subTask1_2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.DONE, 3);
+        SubTask subTask1  = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.DONE, 3);
+        SubTask subTask2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.DONE, 3);
 
-        taskManager.addSubtask(subTask1_1);
-        taskManager.addSubtask(subTask1_2);
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
 
-        SubTask subTask2_1 = new SubTask(7, "2_1 подзадача", "2_1 описание подхадачи", Progress.IN_PROGRESS, 4);
+        SubTask subTask3 = new SubTask(7, "2_1 подзадача", "2_1 описание подхадачи", Progress.IN_PROGRESS, 4);
 
-        taskManager.addSubtask(subTask2_1);
+        taskManager.addSubtask(subTask3);
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpics());
@@ -39,12 +38,28 @@ public class Main {
 
         System.out.println("___________");
 
+        System.out.println(taskManager.getSubtaskById(7));
         System.out.println(taskManager.getEpicById(3));
+        taskManager.getSubtasksByEpic(3);
         System.out.println("История просмотров: " + taskManager.getHistory());
         System.out.println(taskManager.getTaskById(1));
 
         System.out.println("___________");
-        System.out.println("История просмотров: " + taskManager.getHistory());
+        System.out.println("___________");
+        System.out.println(taskManager.getTaskById(1));
+        System.out.println(taskManager.getTaskById(2));
+        System.out.println(taskManager.getEpicById(3));
+        System.out.println(taskManager.getSubtaskById(7));
+        System.out.println(taskManager.getHistory());
+
+        taskManager.deleteTaskById(1);
+        taskManager.deleteTaskById(2);
+        taskManager.deleteEpicById(3);
+        taskManager.deleteSubtaskForId(7);
+
+
+        System.out.println(taskManager.getHistory());
+
         System.out.println("___________");
         System.out.println("___________");
 
@@ -61,15 +76,15 @@ public class Main {
         taskManager.updateEpic(updateEpic1);
         taskManager.updateEpic(updateEpic2);
 
-        SubTask updateSubTask1_1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.NEW, 3);
-        SubTask updateSubTask1_2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.NEW, 3);
+        SubTask updateSubTask1 = new SubTask(5, "1_1 подзадача", "1_1 описание подзадачи", Progress.NEW, 3);
+        SubTask updateSubTask2 = new SubTask(6, "1_2 подзадача", "1_2 описание подзадачи", Progress.NEW, 3);
 
-        taskManager.updateSubtask(updateSubTask1_1);
-        taskManager.updateSubtask(updateSubTask1_2);
+        taskManager.updateSubtask(updateSubTask1);
+        taskManager.updateSubtask(updateSubTask2);
 
-        SubTask updateSubTask2_1 = new SubTask(7, "2_1 должна удалиться подзадача", "2_1 описание подхадачи", Progress.DONE, 4);
+        SubTask updateSubTask3 = new SubTask(7, "2_1 должна удалиться подзадача", "2_1 описание подхадачи", Progress.DONE, 4);
 
-        taskManager.updateSubtask(updateSubTask2_1);
+        taskManager.updateSubtask(updateSubTask3);
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpics());
@@ -83,8 +98,8 @@ public class Main {
         System.out.println(taskManager.deleteSubtaskForId(5));
         System.out.println(taskManager.deleteSubtaskForId(7));
 
-        SubTask updateSubTask3 = new SubTask(5, "333", "1_1 описание подзадачи", Progress.NEW, 4);
-        taskManager.addSubtask(updateSubTask3);
+        SubTask updateSubTask4 = new SubTask(5, "333", "1_1 описание подзадачи", Progress.NEW, 4);
+        taskManager.addSubtask(updateSubTask4);
 
 
         System.out.println(taskManager.getAllTasks());

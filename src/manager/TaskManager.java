@@ -1,8 +1,8 @@
-package Manager;
+package manager;
 
-import Tasks.Epic;
-import Tasks.SubTask;
-import Tasks.Task;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface TaskManager {
 
     Boolean deleteTaskById(Integer id);
 
-    Task getTaskById(Integer id) throws CloneNotSupportedException;
+    Task getTaskById(Integer id);
 
     Epic addEpic(Epic epic);
 
@@ -21,7 +21,7 @@ public interface TaskManager {
 
     Boolean deleteEpicById(Integer id);
 
-    Epic getEpicById(Integer id) throws CloneNotSupportedException;
+    Epic getEpicById(Integer id);
 
     SubTask addSubtask(SubTask subTask);
 
@@ -29,7 +29,7 @@ public interface TaskManager {
 
     Boolean deleteSubtaskForId(Integer id);
 
-    SubTask getSubtaskById(Integer id) throws CloneNotSupportedException;
+    SubTask getSubtaskById(Integer id);
 
     List<SubTask> getSubtasksByEpic(Integer epicId);
 
