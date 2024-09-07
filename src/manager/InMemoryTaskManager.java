@@ -256,7 +256,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubTasks() {
+        List<Integer> subTaskIds = new ArrayList<>(subTaskMap.keySet());
+
+        for (Integer id : subTaskIds) {
+            historyManager.remove(id);
+        }
+
         subTaskMap.clear();
+
         for (Epic epic : epicMap.values()) {
             epic.clearSubtaskId();
             updateEpicStatus(epic);
