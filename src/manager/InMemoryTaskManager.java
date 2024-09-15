@@ -17,6 +17,18 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Epic> epicMap = new HashMap<>();
     private int idCounter = 0;
 
+    public Map<Integer, Task> getTaskMap() {
+        return taskMap;
+    }
+
+    public Map<Integer, SubTask> getSubTaskMap() {
+        return subTaskMap;
+    }
+
+    public Map<Integer, Epic> getEpicMap() {
+        return epicMap;
+    }
+
     private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {

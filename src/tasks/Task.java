@@ -2,7 +2,7 @@ package tasks;
 
 import java.util.Objects;
 
-public class Task implements Cloneable {
+public class Task {
     private Integer id;
     private String name;
     private String description;
