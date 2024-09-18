@@ -15,6 +15,10 @@ public class Task {
         this.status = status;
     }
 
+    public TypeTask getType() {
+        return TypeTask.TASK;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

@@ -25,7 +25,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldSaveAndLoadEmptyFile() {
-        taskManager.save();
+        taskManager.deleteAllSubTasks();
+        taskManager.deleteAllTasks();
+        taskManager.deleteAllEpics();
+
         FileBackedTaskManager loadedManager = new FileBackedTaskManager(tempFile);
 
         assertTrue(loadedManager.getAllTasks().isEmpty(), "Должен быть пустым");
