@@ -1,0 +1,11 @@
+id,type,name,status,description,epic
+2,TASK,ЗАДАЧА 2,NEW,ОПИСАНИЕ 2
+333,TASK,333 1,NEW,ОПИСАНИЕ 1
+334,TASK,ЗАДАЧА 1,NEW,ОПИСАНИЕ 1
+335,TASK,ЗАДАЧА 2,NEW,ОПИСАНИЕ 2
+336,EPIC,ЭПИК 1,NEW,ОПИСАНИЕ ЭПИК
+3,EPIC,ЭПИК 1,NEW,ОПИСАНИЕ ЭПИК
+337,SUBTASK,ПОДЗАДАЧА 1,NEW,Subtask ОПИСАНИЕ 1,336
+338,SUBTASK,ПОДЗАДАЧА 2,NEW,Subtask ОПИСАНИЕ 2,336
+4,SUBTASK,ПОДЗАДАЧА 1,NEW,Subtask ОПИСАНИЕ 1,3
+5,SUBTASK,ПОДЗАДАЧА 2,NEW,Subtask ОПИСАНИЕ 2,3
