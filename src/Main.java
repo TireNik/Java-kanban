@@ -20,7 +20,6 @@ public class Main {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
-        // Добавляем эпик и подзадачи
         Epic epic = new Epic(null,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
         taskManager.addEpic(epic);
 
