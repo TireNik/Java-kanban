@@ -2,7 +2,7 @@ package tasks;
 
 import java.util.Objects;
 
-public class Task implements Cloneable {
+public class Task {
     private Integer id;
     private String name;
     private String description;
@@ -13,6 +13,10 @@ public class Task implements Cloneable {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public TypeTask getType() {
+        return TypeTask.TASK;
     }
 
     public void setName(String name) {

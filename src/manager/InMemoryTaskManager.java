@@ -17,11 +17,44 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Epic> epicMap = new HashMap<>();
     private int idCounter = 0;
 
-    private final HistoryManager historyManager;
-
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
     }
+
+    protected void updateIdCounter(int id) {
+        idCounter = Math.max(idCounter, id);
+    }
+
+    protected void addTaskDirectly(Task task) {
+        taskMap.put(task.getId(), task);
+    }
+
+    protected void addEpicDirectly(Epic epic) {
+        epicMap.put(epic.getId(), epic);
+    }
+
+    protected void addSubTaskDirectly(SubTask subTask) {
+        subTaskMap.put(subTask.getId(), subTask);
+        Epic epic = getEpicMap().get(subTask.getEpicId());
+        if (epic != null) {
+            epic.addSubtaskId(subTask.getId());
+            updateEpicStatus(epic);
+        }
+    }
+
+    protected Map<Integer, Task> getTaskMap() {
+        return taskMap;
+    }
+
+    protected Map<Integer, SubTask> getSubTaskMap() {
+        return subTaskMap;
+    }
+
+    protected Map<Integer, Epic> getEpicMap() {
+        return epicMap;
+    }
+
+    private final HistoryManager historyManager;
 
     @Override
     public List<Task> getHistory() {
