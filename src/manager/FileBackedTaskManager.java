@@ -27,15 +27,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.newLine();
 
             for (Task task : getAllTasks()) {
-                writer.write(toString(task));
+                writer.write(task.toString());
                 writer.newLine();
             }
             for (Epic epic : getAllEpics()) {
-                writer.write(toString(epic));
+                writer.write(epic.toString());
                 writer.newLine();
             }
             for (SubTask subTask : getAllSubTasks()) {
-                writer.write(toString(subTask));
+                writer.write(subTask.toString());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -53,11 +53,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     if (!line.isEmpty() && !line.startsWith("id,")) {
                         Task task = fromString(line);
 
-                        if (task instanceof SubTask) {
+                        if (task.getType().equals(TypeTask.SUBTASK)) {
                             if (!getSubTaskMap().containsKey(task.getId())) {
                                 addSubTaskDirectly((SubTask) task);
                                 }
-                        } else if (task instanceof Epic) {
+                        } else if (task.getType().equals(TypeTask.EPIC)) {
                             if (!getEpicMap().containsKey(task.getId())) {
                                 addEpicDirectly((Epic) task);
                             }
@@ -87,15 +87,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private static String toString(Task task) {
-        if (task instanceof SubTask subTask) {
-            return subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," + subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId();
-        } else if (task instanceof Epic epic) {
-            return epic.getId() + "," + epic.getType() + "," + epic.getName() + "," + epic.getStatus() + "," + epic.getDescription();
-        } else {
-            return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
-        }
-    }
 
     private static Task fromString(String value) {
         String[] fields = value.split(",");

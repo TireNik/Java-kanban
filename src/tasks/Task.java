@@ -71,16 +71,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Tasks.Task {" +
-                "имя: '" + name + '\'' +
-                ", описание: '" + description + '\'' +
-                ", статус: " + status +
-                '}';
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        return getId() + "," + getType() + "," + getName() + "," +
+                getStatus() + "," + getDescription();
     }
 
 }
