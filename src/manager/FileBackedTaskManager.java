@@ -3,12 +3,10 @@ package manager;
 import exeptions.ManagerSaveException;
 import tasks.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -26,18 +24,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(HEADER);
             writer.newLine();
 
-            for (Task task : getAllTasks()) {
-                writer.write(toString(task));
-                writer.newLine();
-            }
-            for (Epic epic : getAllEpics()) {
-                writer.write(toString(epic));
-                writer.newLine();
-            }
-            for (SubTask subTask : getAllSubTasks()) {
-                writer.write(toString(subTask));
-                writer.newLine();
-            }
+            Stream.concat(Stream.concat(getAllTasks().stream(), getAllEpics().stream()),
+                            getAllSubTasks().stream())
+                    .map(FileBackedTaskManager::toString)
+                    .forEach(taskString -> {
+                        try {
+                            writer.write(taskString);
+                            writer.newLine();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
+
         } catch (IOException e) {
             throw new ManagerSaveException("Данные не сохранены");
         }
@@ -47,28 +45,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             if (file.exists()) {
                 List<String> lines = Files.readAllLines(file.toPath());
-                int maxId = 0;
 
-                for (String line : lines) {
-                    if (!line.isEmpty() && !line.startsWith("id,")) {
-                        Task task = fromString(line);
+                int maxId = lines.stream().filter(line -> !line.isEmpty() && !line.startsWith("id,"))
+                        .map(line -> {
+                            Task task = fromString(line);
 
-                        if (task.getType().equals(TypeTask.SUBTASK)) {
-                            if (!getSubTaskMap().containsKey(task.getId())) {
-                                addSubTaskDirectly((SubTask) task);
+                            if (task.getType().equals(TypeTask.SUBTASK)) {
+                                if (!getSubTaskMap().containsKey(task.getId())) {
+                                    addSubTaskDirectly((SubTask) task);
+                                }
+                            } else if (task.getType().equals(TypeTask.EPIC)) {
+                                if (!getEpicMap().containsKey(task.getId())) {
+                                    addEpicDirectly((Epic) task);
+                                }
+                            } else {
+                                if (!getTaskMap().containsKey(task.getId())) {
+                                    addTaskDirectly(task);
+                                }
                             }
-                        } else if (task.getType().equals(TypeTask.EPIC)) {
-                            if (!getEpicMap().containsKey(task.getId())) {
-                                addEpicDirectly((Epic) task);
-                            }
-                        } else {
-                            if (!getTaskMap().containsKey(task.getId())) {
-                                addTaskDirectly(task);
-                            }
-                        }
-                        maxId = Math.max(maxId, task.getId());
-                    }
-                }
+                            return task.getId();
+                        }).max(Integer::compareTo)
+                        .orElse(0);
+
                 updateIdCounter(maxId);
                 restoreEpicSubtasks();
             }
@@ -114,18 +112,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return switch (type) {
             case SUBTASK -> {
                 SubTask subTask = (SubTask) task;
-                yield subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," +
-                        subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId();
+                yield subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," + subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId();
             }
             case EPIC -> {
                 Epic epic = (Epic) task;
-                yield epic.getId() + "," + epic.getType() + "," + epic.getName() + "," +
-                        epic.getStatus() + "," + epic.getDescription() + ",," +
-                        epic.getDuration() + "," + epic.getStartTime() + "," + epic.getEndTime();
+                yield epic.getId() + "," + epic.getType() + "," + epic.getName() + "," + epic.getStatus() + "," + epic.getDescription() + ",," + epic.getDuration() + "," + epic.getStartTime() + "," + epic.getEndTime();
             }
-            case TASK -> task.getId() + "," + task.getType() + "," + task.getName() + "," +
-                    task.getStatus() + "," + task.getDescription() + ",," +
-                    task.getDuration() + "," + task.getStartTime() + "," + task.getEndTime();
+            case TASK ->
+                    task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription() + ",," + task.getDuration() + "," + task.getStartTime() + "," + task.getEndTime();
         };
     }
 
