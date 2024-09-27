@@ -14,7 +14,7 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private File file;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,duration,startTime,endTime";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -27,15 +27,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.newLine();
 
             for (Task task : getAllTasks()) {
-                writer.write(task.toString());
+                writer.write(toString(task));
                 writer.newLine();
             }
             for (Epic epic : getAllEpics()) {
-                writer.write(epic.toString());
+                writer.write(toString(epic));
                 writer.newLine();
             }
             for (SubTask subTask : getAllSubTasks()) {
-                writer.write(subTask.toString());
+                writer.write(toString(subTask));
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -108,6 +108,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             default:
                 throw new IllegalArgumentException("Неизвестный тип: " + type);
         }
+    }
+
+    private static String toString(Task task) {
+        TypeTask type = task.getType();
+
+        return switch (type) {
+            case SUBTASK -> {
+                SubTask subTask = (SubTask) task;
+                yield subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," +
+                        subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId();
+            }
+            case EPIC -> {
+                Epic epic = (Epic) task;
+                yield epic.getId() + "," + epic.getType() + "," + epic.getName() + "," +
+                        epic.getStatus() + "," + epic.getDescription() + ",," +
+                        epic.getDuration() + "," + epic.getStartTime() + "," + epic.getEndTime();
+            }
+            case TASK -> task.getId() + "," + task.getType() + "," + task.getName() + "," +
+                    task.getStatus() + "," + task.getDescription() + ",," +
+                    task.getDuration() + "," + task.getStartTime() + "," + task.getEndTime();
+        };
     }
 
     @Override
