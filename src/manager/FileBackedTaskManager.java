@@ -56,7 +56,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         if (task.getType().equals(TypeTask.SUBTASK)) {
                             if (!getSubTaskMap().containsKey(task.getId())) {
                                 addSubTaskDirectly((SubTask) task);
-                                }
+                            }
                         } else if (task.getType().equals(TypeTask.EPIC)) {
                             if (!getEpicMap().containsKey(task.getId())) {
                                 addEpicDirectly((Epic) task);
