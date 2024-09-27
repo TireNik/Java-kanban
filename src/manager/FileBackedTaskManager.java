@@ -83,6 +83,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (epic != null) {
                 epic.addSubtaskId(subTask.getId());
                 updateEpicStatus(epic);
+                updateEpicTime(epic);
             }
         }
     }
