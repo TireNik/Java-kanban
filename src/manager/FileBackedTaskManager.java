@@ -97,17 +97,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Progress status = Progress.valueOf(fields[3]);
         String description = fields[4];
 
-        switch (type) {
-            case SUBTASK:
+        return switch (type) {
+            case SUBTASK -> {
                 int epicId = Integer.parseInt(fields[5]);
-                return new SubTask(id, name, description, status, epicId);
-            case EPIC:
-                return new Epic(id, name, description);
-            case TASK:
-                return new Task(id, name, description, status);
-            default:
-                throw new IllegalArgumentException("Неизвестный тип: " + type);
-        }
+                yield new SubTask(id, name, description, status, epicId);
+            }
+            case EPIC -> new Epic(id, name, description);
+            case TASK -> new Task(id, name, description, status);
+            default -> throw new IllegalArgumentException("Неизвестный тип: " + type);
+        };
     }
 
     private static String toString(Task task) {

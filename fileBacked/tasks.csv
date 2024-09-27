@@ -1,5 +1,0 @@
-id,type,name,status,description,epic,duration,startTime,endTime
-1,TASK,ЗАДАЧА 1,NEW,ОПИСАНИЕ 1,,null,null,null
-2,TASK,ЗАДАЧА 2,NEW,ОПИСАНИЕ 2,,PT1H30M,2024-09-27T17:17:04.245872,2024-09-27T18:47:04.245872
-3,EPIC,ЭПИК 1,NEW,ОПИСАНИЕ ЭПИК,,PT1H50M,2024-09-27T17:17:04.257395,2024-09-27T19:07:04.257395
-4,SUBTASK,ПОДЗАДАЧА 1,NEW,Subtask ОПИСАНИЕ 1,3

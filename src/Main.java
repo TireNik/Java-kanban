@@ -16,10 +16,12 @@ public class Main {
         File file = new File("/Users/sviridovnikita/IdeaProjects/java-kanban/fileBacked/tasks.csv");
         TaskManager taskManager = Managers.getFileBackedTaskManager(file);
 
-        Task task1 = new Task(null,"ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW);
+        Task task1 = new Task(null,"ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW,
+                Duration.ofMinutes(20),
+                LocalDateTime.now());
         Task task2 = new Task(null,"ЗАДАЧА 2", "ОПИСАНИЕ 2", Progress.NEW,
                 Duration.ofMinutes(90),
-                LocalDateTime.now());
+                LocalDateTime.of(2024, 10, 27, 18, 18));
 
         taskManager.addTask(task1);
         taskManager.addTask(task2);
@@ -30,7 +32,8 @@ public class Main {
         SubTask subTask1 = new SubTask(null,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
                 3,
                 Duration.ofMinutes(110),
-                LocalDateTime.now());
+                LocalDateTime.of(2024, 10, 29, 18, 18));
+
         SubTask subTask2 = new SubTask(null,"ПОДЗАДАЧА 2", "Subtask ОПИСАНИЕ 2", Progress.NEW, 1);
 
         taskManager.addSubtask(subTask1);

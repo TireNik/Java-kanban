@@ -75,6 +75,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task addTask(Task task) {
+        if (isTaskOverlapping(task)) {
+            throw new IllegalArgumentException("Задача пересекается с существующей задачей.");
+        }
         int id = ++idCounter;
         task.setId(id);
         taskMap.put(id, task);
@@ -165,6 +168,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask addSubtask(SubTask subTask) {
+        if (isTaskOverlapping(subTask)) {
+            throw new IllegalArgumentException("Подзадача пересекается с существующими задачами.");
+        }
         Epic epic = epicMap.get(subTask.getEpicId());
         if (epic != null) {
             int id = ++idCounter;
@@ -372,4 +378,24 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.removeIf(task1 -> task1.getId() == task.getId());
         prioritizedTasks.add(task);
     }
+
+    private boolean isOverlapping(Task task1, Task task2) {
+        LocalDateTime start1 = task1.getStartTime();
+        LocalDateTime end1 = task1.getEndTime();
+        LocalDateTime start2 = task2.getStartTime();
+        LocalDateTime end2 = task2.getEndTime();
+
+        if (start1 == null || end1 == null || start2 == null || end2 == null) {
+            return false; // Если время не задано, считаем, что пересечения нет
+        }
+
+        return (start1.isBefore(end2) && end1.isAfter(start2));
+    }
+
+    private boolean isTaskOverlapping(Task newTask) {
+        return taskMap.values().stream()
+                .filter(task -> task.getStartTime() != null && task.getEndTime() != null)
+                .anyMatch(existingTask -> isOverlapping(existingTask, newTask));
+    }
+
 }
