@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -354,7 +355,6 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(prioritizedTasks);
     }
 
-
     private void updatePrioritizedTask(Task task) {
         prioritizedTasks.removeIf(task1 -> task1.getId() == task.getId());
         prioritizedTasks.add(task);
@@ -367,14 +367,15 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime end2 = task2.getEndTime();
 
         if (start1 == null || end1 == null || start2 == null || end2 == null) {
-            return false; // Если время не задано, считаем, что пересечения нет
+            return false;
         }
-
         return (start1.isBefore(end2) && end1.isAfter(start2));
     }
 
     private boolean isTaskOverlapping(Task newTask) {
-        return taskMap.values().stream()
+        return Stream.concat(
+                        Stream.concat(taskMap.values().stream(), subTaskMap.values().stream()),
+                        epicMap.values().stream())
                 .filter(task -> task.getStartTime() != null && task.getEndTime() != null)
                 .anyMatch(existingTask -> isOverlapping(existingTask, newTask));
     }

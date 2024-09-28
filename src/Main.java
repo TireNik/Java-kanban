@@ -26,23 +26,30 @@ public class Main {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
-        Epic epic = new Epic(1,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
+        Epic epic = new Epic(3,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
         taskManager.addEpic(epic);
+
+        Epic epic1 = new Epic(4,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
+        taskManager.addEpic(epic1);
 
         SubTask subTask1 = new SubTask(null,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
                 3,
                 Duration.ofMinutes(110),
-                LocalDateTime.of(2024, 10, 29, 18, 18));
-
-        SubTask subTask2 = new SubTask(null,"ПОДЗАДАЧА 2", "Subtask ОПИСАНИЕ 2", Progress.NEW, 1);
+                LocalDateTime.of(2024, 10, 22, 18, 18));
 
         taskManager.addSubtask(subTask1);
+
+        SubTask subTask2 = new SubTask(null,"ПОДЗАДАЧА 2", "Subtask ОПИСАНИЕ 2", Progress.NEW,
+                4,
+                Duration.ofMinutes(110),
+                LocalDateTime.of(2024, 10, 29, 18, 18));
+
         taskManager.addSubtask(subTask2);
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllSubTasks());
         System.out.println(taskManager.getAllEpics());
-        taskManager.deleteAllTasks();
+//        taskManager.deleteAllTasks();
         System.out.println(taskManager.getAllTasks());
 
     }
