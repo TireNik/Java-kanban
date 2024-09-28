@@ -8,10 +8,13 @@ import tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryTaskManagerTest {
 
@@ -178,6 +181,32 @@ class InMemoryTaskManagerTest {
         taskManager.addSubtask(subTask1);
 
         assertEquals(Progress.IN_PROGRESS, epic.getStatus(), "Epic статус должен быть IN_PROGRESS");
+    }
+
+    @Test
+    void shouldNotNullGetPrioritizedTask() {
+        Task task1 = new Task(null, "ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW,
+                Duration.ofMinutes(20), LocalDateTime.now());
+        Task task2 = new Task(null, "ЗАДАЧА 2", "ОПИСАНИЕ 2", Progress.NEW,
+                Duration.ofMinutes(90), LocalDateTime.of(2024, 10, 27, 18, 18));
+
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        Epic epic1 = new Epic(3, "ЭПИК 1", "ОПИСАНИЕ ЭПИК");
+        Epic epic2 = new Epic(4, "ЭПИК 2", "ОПИСАНИЕ ЭПИК");
+        taskManager.addEpic(epic1);
+        taskManager.addEpic(epic2);
+
+        SubTask subTask1 = new SubTask(null, "ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
+                3, Duration.ofMinutes(110), LocalDateTime.of(2024, 10, 22, 18, 18));
+        SubTask subTask2 = new SubTask(null, "ПОДЗАДАЧА 2", "Subtask ОПИСАНИЕ 2", Progress.NEW,
+                4, Duration.ofMinutes(110), LocalDateTime.of(2024, 10, 29, 18, 18));
+
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
+
+        assertNotNull(taskManager.getPrioritizedTasks(), "Не должен быть Null");
     }
 
 }

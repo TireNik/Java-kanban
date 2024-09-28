@@ -46,6 +46,7 @@ public class Main {
 
         taskManager.addSubtask(subTask2);
 
+        System.out.println(taskManager.getPrioritizedTasks());
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllSubTasks());
         System.out.println(taskManager.getAllEpics());
