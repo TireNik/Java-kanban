@@ -126,8 +126,58 @@ class InMemoryTaskManagerTest {
     @Test
     void managerGetDefaultTest() {
         TaskManager taskManager = Managers.getDefault();
-
         assertNotNull(taskManager, "Не должен быть Null");
+    }
+
+    @Test
+    void shouldSetEpicStatusNewIfAllSubtasksNew() {
+        Epic epic = new Epic(1, "Epic", "Description");
+        taskManager.addEpic(epic);
+
+        SubTask subTask1 = new SubTask(2, "Subtask 1", "Description", Progress.NEW, epic.getId());
+        SubTask subTask2 = new SubTask(3, "Subtask 2", "Description", Progress.NEW, epic.getId());
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
+
+        assertEquals(Progress.NEW, epic.getStatus(), "Epic статус должен быть NEW");
+    }
+
+    @Test
+    void shouldSetEpicStatusDoneIfAllSubtasksDone() {
+        Epic epic = new Epic(1, "Epic", "Description");
+        taskManager.addEpic(epic);
+
+        SubTask subTask1 = new SubTask(2, "Subtask 1", "Description", Progress.DONE, epic.getId());
+        SubTask subTask2 = new SubTask(3, "Subtask 2", "Description", Progress.DONE, epic.getId());
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
+
+        assertEquals(Progress.DONE, epic.getStatus(), "Epic статус должен быть DONE");
+    }
+
+    @Test
+    void shouldSetEpicStatusInProgressIfSubtasksNewAndDone() {
+        Epic epic = new Epic(1, "Epic", "Description");
+        taskManager.addEpic(epic);
+
+        SubTask subTask1 = new SubTask(2, "Subtask 1", "Description", Progress.NEW, epic.getId());
+        SubTask subTask2 = new SubTask(3, "Subtask 2", "Description", Progress.DONE, epic.getId());
+        taskManager.addSubtask(subTask1);
+        taskManager.addSubtask(subTask2);
+
+        assertEquals(Progress.IN_PROGRESS, epic.getStatus(), "Epic статус должен быть IN_PROGRESS");
+    }
+
+    @Test
+    void shouldSetEpicStatusInProgressIfAnySubtaskInProgress() {
+        Epic epic = new Epic(1, "Epic", "Description");
+        taskManager.addEpic(epic);
+
+        SubTask subTask1 = new SubTask(2, "Subtask 1", "Description",
+                Progress.IN_PROGRESS, epic.getId());
+        taskManager.addSubtask(subTask1);
+
+        assertEquals(Progress.IN_PROGRESS, epic.getStatus(), "Epic статус должен быть IN_PROGRESS");
     }
 
 }

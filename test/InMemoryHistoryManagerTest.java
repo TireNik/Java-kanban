@@ -78,4 +78,38 @@ class InMemoryHistoryManagerTest {
         List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size(), "Дубликаты не должны добавляться");
     }
+
+    @Test
+    void shouldRemoveTaskFromHistoryMiddle() {
+        Task task1 = new Task(1, "Task 1", "Description 1", Progress.NEW);
+        Task task2 = new Task(2, "Task 2", "Description 2", Progress.NEW);
+        Task task3 = new Task(3, "Task 3", "Description 3", Progress.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(2);
+
+        assertEquals(2, historyManager.getHistory().size(), "История должна содержать две задачи");
+        assertEquals(task1, historyManager.getHistory().get(0), "Первая задача должна быть task1");
+        assertEquals(task3, historyManager.getHistory().get(1), "Вторая задача должна быть task3");
+    }
+
+    @Test
+    void shouldRemoveTaskFromHistoryEnd() {
+        Task task1 = new Task(1, "Task 1", "Description 1", Progress.NEW);
+        Task task2 = new Task(2, "Task 2", "Description 2", Progress.NEW);
+        Task task3 = new Task(3, "Task 3", "Description 3", Progress.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(3);
+
+        assertEquals(2, historyManager.getHistory().size(), "История должна содержать две задачи");
+        assertEquals(task1, historyManager.getHistory().get(0), "Первая задача должна быть task1");
+        assertEquals(task2, historyManager.getHistory().get(1), "Вторая задача должна быть task2");
+    }
 }

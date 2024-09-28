@@ -89,28 +89,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-
-//    private static Task fromString(String value) {
-//        String[] fields = value.split(",");
-//        int id = Integer.parseInt(fields[0]);
-//        TypeTask type = TypeTask.valueOf(fields[1]);
-//        String name = fields[2];
-//        Progress status = Progress.valueOf(fields[3]);
-//        String description = fields[4];
-//        Duration duration = Duration.parse(fields[6]);
-//        LocalDateTime startTime = LocalDateTime.parse(fields[7]);
-//
-//        return switch (type) {
-//            case SUBTASK -> {
-//                int epicId = Integer.parseInt(fields[5]);
-//                yield new SubTask(id, name, description, status, epicId, duration, startTime);
-//            }
-//            case EPIC -> new Epic(id, name, description);
-//            case TASK -> new Task(id, name, description, status, duration, startTime);
-//            default -> throw new IllegalArgumentException("Неизвестный тип: " + type);
-//        };
-//    }
-
     private static Task fromString(String value) {
         String[] fields = value.split(",");
         int id = Integer.parseInt(fields[0]);
@@ -119,19 +97,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Progress status = Progress.valueOf(fields[3]);
         String description = fields[4];
 
-        // Проверяем, есть ли значение в поле для длительности, и обрабатываем его.
         Duration duration = null;
-        if (fields[6] != null && !fields[6].equals("null")) { // Проверка на null
+        if (fields[6] != null && !fields[6].equals("null")) {
             try {
-                duration = Duration.parse(fields[6]); // Парсим ISO-формат (например, "PT20M")
+                duration = Duration.parse(fields[6]);
             } catch (DateTimeParseException e) {
-                // Если не получилось, пробуем интерпретировать как минуты.
                 duration = Duration.ofMinutes(Long.parseLong(fields[6]));
             }
         }
 
         LocalDateTime startTime = null;
-        if (fields[7] != null && !fields[7].equals("null")) { // Проверка на null для startTime
+        if (fields[7] != null && !fields[7].equals("null")) {
             startTime = LocalDateTime.parse(fields[7]);
         }
 
