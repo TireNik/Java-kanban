@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -89,6 +88,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task updateTask(Task updateTask) {
+        if (isTaskOverlapping(updateTask)) {
+            throw new IllegalArgumentException("Обнавленная адача пересекается с существующей задачей.");
+        }
         int id = updateTask.getId();
         if (taskMap.containsKey(id)) {
             taskMap.put(id, updateTask);
@@ -103,7 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskMap.containsKey(id)) {
             Task removeTask = taskMap.remove(id);
             historyManager.remove(id);
-            prioritizedTasks.removeIf(task1 -> task1.getId() == id);
+            prioritizedTasks.remove(removeTask);
             return removeTask != null;
         }
         return false;
@@ -189,6 +191,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask updateSubtask(SubTask subTask) {
+        if (isTaskOverlapping(subTask)) {
+            throw new IllegalArgumentException("Обнавленная подзадача пересекается с существующими задачами.");
+        }
         int id = subTask.getId();
         if (subTaskMap.containsKey(id)) {
             SubTask currentSubtaskId = subTaskMap.get(id);
@@ -216,7 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.removeSubtaskId(id);
                 updateEpicStatus(epic);
                 updateEpicTime(epic);
-                prioritizedTasks.removeIf(subTask1 -> subTask1.getId() == subTask.getId());
+                prioritizedTasks.remove(subTask);
             }
             return true;
         }
@@ -328,7 +333,7 @@ public class InMemoryTaskManager implements TaskManager {
         List<Integer> epicIds = new ArrayList<>(epicMap.keySet());
         List<Integer> subtaskIds = new ArrayList<>(subTaskMap.keySet());
 
-        prioritizedTasks.removeIf(epic -> epicMap.containsKey(epic.getId()));
+        prioritizedTasks.removeIf(subtask -> subTaskMap.containsKey(subtask.getId()));
         epicMap.clear();
         subTaskMap.clear();
 
@@ -373,9 +378,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isTaskOverlapping(Task newTask) {
-        return Stream.concat(
-                        Stream.concat(taskMap.values().stream(), subTaskMap.values().stream()),
-                        epicMap.values().stream())
+        return prioritizedTasks.stream()
                 .filter(task -> task.getStartTime() != null && task.getEndTime() != null)
                 .anyMatch(existingTask -> isOverlapping(existingTask, newTask));
     }

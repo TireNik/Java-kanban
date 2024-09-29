@@ -26,6 +26,12 @@ public class Main {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
+        Task task3 = new Task(2,"ЗАДАЧА 2", "ОПИСАНИЕ 2", Progress.NEW,
+                Duration.ofMinutes(90),
+                LocalDateTime.now());
+
+        taskManager.updateTask(task3);
+
         Epic epic = new Epic(3,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
         taskManager.addEpic(epic);
 
