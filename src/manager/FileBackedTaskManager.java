@@ -3,18 +3,19 @@ package manager;
 import exeptions.ManagerSaveException;
 import tasks.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private File file;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,duration,startTime,endTime";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -26,18 +27,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(HEADER);
             writer.newLine();
 
-            for (Task task : getAllTasks()) {
-                writer.write(toString(task));
-                writer.newLine();
-            }
-            for (Epic epic : getAllEpics()) {
-                writer.write(toString(epic));
-                writer.newLine();
-            }
-            for (SubTask subTask : getAllSubTasks()) {
-                writer.write(toString(subTask));
-                writer.newLine();
-            }
+            Stream.concat(Stream.concat(getAllTasks().stream(), getAllEpics().stream()),
+                            getAllSubTasks().stream())
+                    .map(FileBackedTaskManager::toString)
+                    .forEach(taskString -> {
+                        try {
+                            writer.write(taskString);
+                            writer.newLine();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
+
         } catch (IOException e) {
             throw new ManagerSaveException("Данные не сохранены");
         }
@@ -47,28 +48,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             if (file.exists()) {
                 List<String> lines = Files.readAllLines(file.toPath());
-                int maxId = 0;
 
-                for (String line : lines) {
-                    if (!line.isEmpty() && !line.startsWith("id,")) {
-                        Task task = fromString(line);
+                int maxId = lines.stream().filter(line -> !line.isEmpty() && !line.startsWith("id,"))
+                        .map(line -> {
+                            Task task = fromString(line);
 
-                        if (task instanceof SubTask) {
-                            if (!getSubTaskMap().containsKey(task.getId())) {
-                                addSubTaskDirectly((SubTask) task);
+                            if (task.getType().equals(TypeTask.SUBTASK)) {
+                                if (!getSubTaskMap().containsKey(task.getId())) {
+                                    addSubTaskDirectly((SubTask) task);
                                 }
-                        } else if (task instanceof Epic) {
-                            if (!getEpicMap().containsKey(task.getId())) {
-                                addEpicDirectly((Epic) task);
+                            } else if (task.getType().equals(TypeTask.EPIC)) {
+                                if (!getEpicMap().containsKey(task.getId())) {
+                                    addEpicDirectly((Epic) task);
+                                }
+                            } else {
+                                if (!getTaskMap().containsKey(task.getId())) {
+                                    addTaskDirectly(task);
+                                }
                             }
-                        } else {
-                            if (!getTaskMap().containsKey(task.getId())) {
-                                addTaskDirectly(task);
-                            }
-                        }
-                        maxId = Math.max(maxId, task.getId());
-                    }
-                }
+                            return task.getId();
+                        }).max(Integer::compareTo)
+                        .orElse(0);
+
                 updateIdCounter(maxId);
                 restoreEpicSubtasks();
             }
@@ -83,17 +84,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (epic != null) {
                 epic.addSubtaskId(subTask.getId());
                 updateEpicStatus(epic);
+                updateEpicTime(epic);
             }
-        }
-    }
-
-    private static String toString(Task task) {
-        if (task instanceof SubTask subTask) {
-            return subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," + subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId();
-        } else if (task instanceof Epic epic) {
-            return epic.getId() + "," + epic.getType() + "," + epic.getName() + "," + epic.getStatus() + "," + epic.getDescription();
-        } else {
-            return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
         }
     }
 
@@ -105,17 +97,53 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Progress status = Progress.valueOf(fields[3]);
         String description = fields[4];
 
-        switch (type) {
-            case SUBTASK:
-                int epicId = Integer.parseInt(fields[5]);
-                return new SubTask(id, name, description, status, epicId);
-            case EPIC:
-                return new Epic(id, name, description);
-            case TASK:
-                return new Task(id, name, description, status);
-            default:
-                throw new IllegalArgumentException("Неизвестный тип: " + type);
+        Duration duration = null;
+        if (fields[6] != null && !fields[6].equals("null")) {
+            try {
+                duration = Duration.parse(fields[6]);
+            } catch (DateTimeParseException e) {
+                duration = Duration.ofMinutes(Long.parseLong(fields[6]));
+            }
         }
+
+        LocalDateTime startTime = null;
+        if (fields[7] != null && !fields[7].equals("null")) {
+            startTime = LocalDateTime.parse(fields[7]);
+        }
+
+        return switch (type) {
+            case SUBTASK -> {
+                int epicId = Integer.parseInt(fields[5]);
+                yield new SubTask(id, name, description, status, epicId, duration, startTime);
+            }
+            case EPIC -> new Epic(id, name, description);
+            case TASK -> new Task(id, name, description, status, duration, startTime);
+            default -> throw new IllegalArgumentException("Неизвестный тип: " + type);
+        };
+    }
+
+    private static String toString(Task task) {
+        TypeTask type = task.getType();
+
+        return switch (type) {
+            case SUBTASK -> {
+                SubTask subTask = (SubTask) task;
+                yield subTask.getId() + "," + subTask.getType() + "," + subTask.getName() + "," +
+                        subTask.getStatus() + "," + subTask.getDescription() + "," + subTask.getEpicId() + "," +
+                        subTask.getDuration() + "," +
+                        subTask.getStartTime() + "," + subTask.getEndTime();
+            }
+            case EPIC -> {
+                Epic epic = (Epic) task;
+                yield epic.getId() + "," + epic.getType() + "," + epic.getName() + "," + epic.getStatus() + "," +
+                        epic.getDescription() + ",," + epic.getDuration() + "," +
+                        epic.getStartTime() + "," + epic.getEndTime();
+            }
+            case TASK ->
+                    task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," +
+                            task.getDescription() + ",," + task.getDuration() + "," + task.getStartTime() + "," +
+                            task.getEndTime();
+        };
     }
 
     @Override

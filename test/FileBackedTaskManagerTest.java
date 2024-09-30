@@ -51,5 +51,9 @@ class FileBackedTaskManagerTest {
         assertEquals(1, loadedManager.getAllTasks().size(), "Должна быть одна задача");
         assertEquals(1, loadedManager.getAllEpics().size(), "Должен быть один эпик");
         assertEquals(1, loadedManager.getAllSubTasks().size(), "Должна быть одна подзадача");
+
+        assertEquals(task, loadedManager.getTaskById(1), "Задача должна совпадать с оригиналом");
+        assertEquals(epic, loadedManager.getEpicById(2), "Эпик должен совпадать с оригиналом");
+        assertEquals(subTask, loadedManager.getSubtaskById(3), "Подзадача должна совпадать с оригиналом");
     }
 }
