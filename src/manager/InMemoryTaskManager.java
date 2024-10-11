@@ -20,6 +20,8 @@ public class InMemoryTaskManager implements TaskManager {
     private TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())));
 
+    private final HistoryManager historyManager;
+
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
     }
@@ -67,8 +69,6 @@ public class InMemoryTaskManager implements TaskManager {
         return epicMap;
     }
 
-    private final HistoryManager historyManager;
-
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
@@ -88,13 +88,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task updateTask(Task updateTask) {
-        if (isTaskOverlapping(updateTask)) {
-            throw new IllegalArgumentException("Обнавленная адача пересекается с существующей задачей.");
-        }
-        int id = updateTask.getId();
-        if (taskMap.containsKey(id)) {
-            taskMap.put(id, updateTask);
-            updatePrioritizedTask(updateTask);
+        Task oldTask = taskMap.get(updateTask.getId());
+
+        if (oldTask != null) {
+            prioritizedTasks.remove(oldTask);
+
+            if (isTaskOverlapping(updateTask)) {
+                prioritizedTasks.add(oldTask);
+                throw new IllegalArgumentException("Обнавленная адача пересекается с существующей задачей.");
+            }
+
+            taskMap.put(updateTask.getId(), updateTask);
+            prioritizedTasks.add(updateTask);
             return updateTask;
         }
         return null;
@@ -191,15 +196,24 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask updateSubtask(SubTask subTask) {
+        SubTask oldSub = subTaskMap.get(subTask.getId());
+
+        if (oldSub == null) {
+            return null;
+        }
+        prioritizedTasks.remove(oldSub);
+
         if (isTaskOverlapping(subTask)) {
+            prioritizedTasks.add(oldSub);
             throw new IllegalArgumentException("Обнавленная подзадача пересекается с существующими задачами.");
         }
+
         int id = subTask.getId();
         if (subTaskMap.containsKey(id)) {
             SubTask currentSubtaskId = subTaskMap.get(id);
             if (currentSubtaskId.getEpicId().equals(subTask.getEpicId())) {
                 subTaskMap.put(id, subTask);
-                updatePrioritizedTask(subTask);
+                prioritizedTasks.add(subTask);
                 Epic epic = epicMap.get(subTask.getEpicId());
                 if (epic != null) {
                     updateEpicStatus(epic);
@@ -208,6 +222,7 @@ public class InMemoryTaskManager implements TaskManager {
                 return subTask;
             }
         }
+
         return null;
     }
 
@@ -264,8 +279,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         Duration totalDuration = subTasks.stream()
-                .filter(subTask -> subTask.getDuration() != null)
                 .map(SubTask::getDuration)
+                .filter(Objects::nonNull)
                 .reduce(Duration.ZERO, Duration::plus);
 
         LocalDateTime earliestStart = subTasks.stream()
@@ -362,12 +377,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void updatePrioritizedTask(Task task) {
         prioritizedTasks.removeIf(task1 -> task1.getId() == task.getId());
+
         prioritizedTasks.add(task);
     }
 
     private boolean isOverlapping(Task task1, Task task2) {
         LocalDateTime start1 = task1.getStartTime();
         LocalDateTime end1 = task1.getEndTime();
+
         LocalDateTime start2 = task2.getStartTime();
         LocalDateTime end2 = task2.getEndTime();
 

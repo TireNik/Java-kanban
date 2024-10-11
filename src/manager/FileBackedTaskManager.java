@@ -49,7 +49,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (file.exists()) {
                 List<String> lines = Files.readAllLines(file.toPath());
 
-                int maxId = lines.stream().filter(line -> !line.isEmpty() && !line.startsWith("id,"))
+                int maxId = lines.stream()
+                        .filter(line -> !line.isEmpty() && !line.startsWith("id,"))
                         .map(line -> {
                             Task task = fromString(line);
 
@@ -67,7 +68,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 }
                             }
                             return task.getId();
-                        }).max(Integer::compareTo)
+                        })
+                        .max(Integer::compareTo)
                         .orElse(0);
 
                 updateIdCounter(maxId);
