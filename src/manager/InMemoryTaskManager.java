@@ -269,7 +269,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicTime(Epic epic) {
-        List<SubTask> subTasks = getSubtasksByEpic(epic.getId());
+        List<SubTask> subTasks = getSubtasksByEpic(epic.getId()).stream()
+                .distinct()
+                .toList();
 
         if (subTasks.isEmpty()) {
             epic.setDuration(Duration.ZERO);
@@ -295,6 +297,10 @@ public class InMemoryTaskManager implements TaskManager {
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
 
+        System.out.println("Обновление времени эпика: " + epic.getName());
+        System.out.println("Общая длительность: " + totalDuration);
+        System.out.println("Самое раннее начало: " + earliestStart);
+        System.out.println("Самое позднее завершение: " + latestEnd);
         epic.setDuration(totalDuration);
         epic.setStartTime(earliestStart);
         epic.setEndTime(latestEnd);

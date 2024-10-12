@@ -19,10 +19,10 @@ public class Main {
         Task task1 = new Task(1,"ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW,
                 Duration.ofMinutes(20),
                 LocalDateTime.now());
-        taskManager.addTask(task1);
+//        taskManager.addTask(task1);
 
         Task upTask1 = new Task(1,"ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW,
-                Duration.ofMinutes(30),
+                Duration.ofMinutes(50),
                 LocalDateTime.now());
         taskManager.updateTask(upTask1);
 
@@ -39,21 +39,21 @@ public class Main {
 //
 ////        taskManager.updateTask(task3);
 //
-        Epic epic = new Epic(2,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
-        taskManager.addEpic(epic);
+        Epic epic = new Epic(1,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
+//        taskManager.addEpic(epic);
 //
-//        Epic epic1 = new Epic(4,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
-//        taskManager.addEpic(epic1);
+        Epic epic1 = new Epic(4,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
+        taskManager.addEpic(epic1);
 //
-        SubTask subTask1 = new SubTask(3,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
-                2,
+        SubTask subTask1 = new SubTask(2,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
+                1,
                 Duration.ofMinutes(110),
-                LocalDateTime.of(2024, 10, 22, 18, 18));
+                LocalDateTime.of(2025, 10, 22, 18, 18));
 
-        taskManager.addSubtask(subTask1);
+//        taskManager.addSubtask(subTask1);
 
-        SubTask upSubTask1 = new SubTask(3,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
-                2,
+        SubTask upSubTask1 = new SubTask(2,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
+                1,
                 Duration.ofMinutes(20),
                 LocalDateTime.of(2024, 10, 22, 18, 18));
 
