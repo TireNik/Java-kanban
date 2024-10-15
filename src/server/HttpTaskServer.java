@@ -1,5 +1,6 @@
 package server;
 
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import manager.Managers;
 import manager.TaskManager;
@@ -18,6 +19,8 @@ public class HttpTaskServer {
         this.taskManager = taskManager;
 
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
+        httpServer.createContext("/Subtasks", new SubtaskHandler(taskManager));
+//        httpServer.createContext("/stop", stop());
 
         httpServer.setExecutor(null);
     }
@@ -27,6 +30,12 @@ public class HttpTaskServer {
         System.out.println("Server start");
     }
 
+    public HttpHandler stop () {
+        httpServer.stop(0);
+        System.out.println("Server stop");
+        return null;
+    }
+
     public static void main(String[] args) throws IOException {
         File file = new File("/Users/sviridovnikita/IdeaProjects/java-kanban/fileBacked/tasks.csv");
         TaskManager taskManager = Managers.getFileBackedTaskManager(file);
@@ -34,7 +43,7 @@ public class HttpTaskServer {
         HttpTaskServer server = new HttpTaskServer(taskManager);
         server.start();
 
-        System.out.println("Загруженные задачи: " + taskManager.getTaskById(1));
+//        System.out.println("Загруженные задачи: " + taskManager.getTaskById(1));
 
     }
 }
