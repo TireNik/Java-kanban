@@ -2,7 +2,6 @@ package tasks;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -10,10 +9,8 @@ public class Task {
     private String name;
     private String description;
     private Progress status;
-    private String duration;
-    private String startTime;
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(Integer id, String name, String description, Progress status,
                 Duration duration, LocalDateTime startTime) {
@@ -21,8 +18,8 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.duration = duration.toString();
-        this.startTime = startTime.format(formatter);
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Task(Integer id, String name, String description, Progress status) {
@@ -34,28 +31,25 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         if (startTime != null && duration != null) {
-            LocalDateTime start = LocalDateTime.parse(startTime, formatter);
-            Duration dur = Duration.parse(duration);
-
-            return start.plus(dur);
+            return startTime.plus(duration);
         }
         return null;
     }
 
     public Duration getDuration() {
-        return Duration.parse(duration);
+        return duration;
     }
 
     public void setDuration(Duration duration) {
-        this.duration = duration.toString();
+        this.duration = duration;
     }
 
     public LocalDateTime getStartTime() {
-        return LocalDateTime.parse(startTime, formatter);
+        return startTime;
     }
 
     public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime.format(formatter);
+        this.startTime = startTime;
     }
 
     public TypeTask getType() {

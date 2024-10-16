@@ -5,17 +5,24 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import exeptions.NotFoundException;
 import manager.TaskManager;
+import server.JsonTimeAdapter.DurationAdapter;
+import server.JsonTimeAdapter.LocalDateTimeAdapter;
 import tasks.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 public class TaskHandler extends BaseHttpHandler {
     private final TaskManager taskManager;
-    GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
-    Gson gson = gsonBuilder.create();
+    Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .setPrettyPrinting()
+            .create();
 
     public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;

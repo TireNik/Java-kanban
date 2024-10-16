@@ -19,7 +19,8 @@ public class HttpTaskServer {
         this.taskManager = taskManager;
 
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
-        httpServer.createContext("/Subtasks", new SubtaskHandler(taskManager));
+        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
+        httpServer.createContext("/epics", new EpicHandler(taskManager));
 //        httpServer.createContext("/stop", stop());
 
         httpServer.setExecutor(null);
