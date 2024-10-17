@@ -127,6 +127,8 @@ public class TaskHandler extends BaseHttpHandler {
                     taskManager.deleteTaskById(id);
                     sendText(exchange, "Задача с id: " + id + " удалена", 200);
                 }
+            } else {
+                sendNotFound(exchange);
             }
         } catch (NotFoundException e) {
             sendNotFound(exchange);

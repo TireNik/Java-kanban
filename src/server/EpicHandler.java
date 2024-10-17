@@ -9,12 +9,14 @@ import manager.TaskManager;
 import server.JsonTimeAdapter.DurationAdapter;
 import server.JsonTimeAdapter.LocalDateTimeAdapter;
 import tasks.Epic;
+import tasks.SubTask;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class EpicHandler extends BaseHttpHandler {
@@ -44,13 +46,40 @@ public class EpicHandler extends BaseHttpHandler {
                             String response = gson.toJson(taskManager.getAllEpics());
                             sendText(exchange, response, 200);
                         }
+                    } else if (Pattern.matches("/epics/\\d+/subtasks", path)) {
+                        handleGetEpicSubtasks(exchange);
                     }
                 }
                 case "POST" -> handelPost(exchange);
+//                {
+//                    "name": "",
+//                        "description": ""
+//                }
                 case "DELETE" -> handleDelete(exchange);
                 default -> sendNotFound(exchange);
             }
         } catch (Exception e) {
+            sendText(exchange, "Internal Server Error", 500);
+        }
+    }
+
+    private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
+        try {
+            String path = exchange.getRequestURI().getPath();
+            String[] segments = path.split("/");
+            int id = Integer.parseInt(segments[2]);
+
+            List<SubTask> subtasks = taskManager.getSubtasksByEpic(id);
+
+            System.out.println(subtasks);
+            String response = gson.toJson(subtasks);
+            System.out.println(response);
+            sendText(exchange, response, 200);
+
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (Exception e) {
+            e.printStackTrace();
             sendText(exchange, "Internal Server Error", 500);
         }
     }
@@ -87,7 +116,6 @@ public class EpicHandler extends BaseHttpHandler {
             String name = jsonObject.get("name").getAsString();
             String description = jsonObject.get("description").getAsString();
 
-            // Создаем эпик с именем и описанием
             Epic epic = new Epic(1, name, description);
 
             System.out.println("Deserialized " + epic);
@@ -101,7 +129,7 @@ public class EpicHandler extends BaseHttpHandler {
         }
     }
 
-    private void handleDelete (HttpExchange exchange) throws IOException {
+    private void handleDelete(HttpExchange exchange) throws IOException {
         try {
             String query = exchange.getRequestURI().getRawQuery();
             if (query != null && query.startsWith("id=")) {
@@ -112,6 +140,8 @@ public class EpicHandler extends BaseHttpHandler {
                     taskManager.deleteEpicById(id);
                     sendText(exchange, "Задача с id: " + id + " удалена", 200);
                 }
+            } else {
+                sendNotFound(exchange);
             }
         } catch (NotFoundException e) {
             sendNotFound(exchange);

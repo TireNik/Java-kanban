@@ -20,7 +20,7 @@ public class Main {
         Task task1 = new Task(1,"ЗАДАЧА 1", "ОПИСАНИЕ 1", Progress.NEW,
                 Duration.ofMinutes(20),
                 LocalDateTime.now());
-        taskManager.addTask(task1);
+//        taskManager.addTask(task1);
 
         System.out.println(taskManager.getAllTasks());
 
@@ -45,14 +45,14 @@ public class Main {
         Epic epic = new Epic(1,"ЭПИК 1", "ОПИСАНИЕ ЭПИК");
 //
         Epic epic1 = new Epic(2,"ЭПИК 1!!!!", "ОПИСАНИЕ ЭПИК!!!");
-        taskManager.addEpic(epic1);
+        taskManager.updateEpic(epic1);
 //
         SubTask subTask1 = new SubTask(3,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
                 2,
                 Duration.ofMinutes(110),
                 LocalDateTime.of(2025, 10, 22, 18, 18));
 
-        taskManager.addSubtask(subTask1);
+//        taskManager.addSubtask(subTask1);
 
         SubTask upSubTask1 = new SubTask(2,"ПОДЗАДАЧА 1", "Subtask ОПИСАНИЕ 1", Progress.NEW,
                 1,
