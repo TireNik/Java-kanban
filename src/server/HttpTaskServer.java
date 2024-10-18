@@ -1,9 +1,9 @@
 package server;
 
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import manager.Managers;
 import manager.TaskManager;
+import server.Handlers.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,6 @@ public class HttpTaskServer {
         httpServer.createContext("/epics", new EpicHandler(taskManager));
         httpServer.createContext("/history", new HistoryHandler(taskManager));
         httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
-//        httpServer.createContext("/stop", stop());
 
         httpServer.setExecutor(null);
     }
@@ -33,10 +32,9 @@ public class HttpTaskServer {
         System.out.println("Server start");
     }
 
-    public HttpHandler stop () {
+    public void stop() {
         httpServer.stop(0);
         System.out.println("Server stop");
-        return null;
     }
 
     public static void main(String[] args) throws IOException {

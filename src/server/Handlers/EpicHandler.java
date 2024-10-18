@@ -1,12 +1,14 @@
-package server;
+package server.Handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
 import exeptions.NotFoundException;
 import manager.TaskManager;
 import server.JsonTimeAdapter.DurationAdapter;
 import server.JsonTimeAdapter.LocalDateTimeAdapter;
+import tasks.Epic;
 import tasks.SubTask;
 
 import java.io.IOException;
@@ -14,9 +16,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Pattern;
 
-public class SubtaskHandler extends BaseHttpHandler {
+public class EpicHandler extends BaseHttpHandler {
     private final TaskManager taskManager;
     Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
@@ -24,7 +27,7 @@ public class SubtaskHandler extends BaseHttpHandler {
             .setPrettyPrinting()
             .create();
 
-    public SubtaskHandler(TaskManager taskManager) {
+    public EpicHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -36,20 +39,47 @@ public class SubtaskHandler extends BaseHttpHandler {
             String query = exchange.getRequestURI().getQuery();
             switch (method) {
                 case "GET" -> {
-                    if (Pattern.matches("/subtasks", path)) {
+                    if (Pattern.matches("/epics", path)) {
                         if (query != null && query.startsWith("id=")) {
                             handleGetById(exchange);
                         } else {
-                            String response = gson.toJson(taskManager.getAllSubTasks());
+                            String response = gson.toJson(taskManager.getAllEpics());
                             sendText(exchange, response, 200);
                         }
+                    } else if (Pattern.matches("/epics/\\d+/subtasks", path)) {
+                        handleGetEpicSubtasks(exchange);
                     }
                 }
                 case "POST" -> handelPost(exchange);
+//                {
+//                    "name": "",
+//                        "description": ""
+//                }
                 case "DELETE" -> handleDelete(exchange);
                 default -> sendNotFound(exchange);
             }
         } catch (Exception e) {
+            sendText(exchange, "Internal Server Error", 500);
+        }
+    }
+
+    private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
+        try {
+            String path = exchange.getRequestURI().getPath();
+            String[] segments = path.split("/");
+            int id = Integer.parseInt(segments[2]);
+
+            List<SubTask> subtasks = taskManager.getSubtasksByEpic(id);
+
+            System.out.println(subtasks);
+            String response = gson.toJson(subtasks);
+            System.out.println(response);
+            sendText(exchange, response, 200);
+
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (Exception e) {
+            e.printStackTrace();
             sendText(exchange, "Internal Server Error", 500);
         }
     }
@@ -61,9 +91,9 @@ public class SubtaskHandler extends BaseHttpHandler {
                 String idStr = query.split("=")[1];
                 int id = Integer.parseInt(idStr);
 
-                SubTask subTask = taskManager.getSubtaskById(id);
+                Epic epic = taskManager.getEpicById(id);
 
-                String response = gson.toJson(subTask);
+                String response = gson.toJson(epic);
                 System.out.println(response);
                 sendText(exchange, response, 200);
             }
@@ -76,45 +106,28 @@ public class SubtaskHandler extends BaseHttpHandler {
     }
 
     private void handelPost(HttpExchange exchange) throws IOException {
-        String query = exchange.getRequestURI().getQuery();
-        String path = exchange.getRequestURI().getPath();
 
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-        SubTask subTask = gson.fromJson(body, SubTask.class);
+        System.out.println("Body " + body);
+        try {
+            JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
+            String name = jsonObject.get("name").getAsString();
+            String description = jsonObject.get("description").getAsString();
 
-        if (Pattern.matches("/subtasks", path)) {
-            if (query != null && query.startsWith("id=")) {
-                try {
-                    String idStr = query.split("=")[1];
-                    int id = Integer.parseInt(idStr);
+            Epic epic = new Epic(1, name, description);
 
-                    subTask.setId(id);
+            System.out.println("Deserialized " + epic);
 
-                    taskManager.updateSubtask(subTask);
-
-                    String response = gson.toJson(subTask);
-                    System.out.println(response);
-                    sendText(exchange, response, 200);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    sendText(exchange, "Server Error", 500);
-                }
-            } else {
-                try {
-                    taskManager.addSubtask(subTask);
-                    String response = gson.toJson(subTask);
-                    sendText(exchange, response, 201);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    sendText(exchange, "Server Error", 500);
-                }
-            }
-
+            taskManager.addEpic(epic);
+            String response = gson.toJson(epic);
+            sendText(exchange, response, 201);
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendText(exchange, "Server Error", 500);
         }
     }
-
 
     private void handleDelete(HttpExchange exchange) throws IOException {
         try {
@@ -124,7 +137,7 @@ public class SubtaskHandler extends BaseHttpHandler {
                 int id = Integer.parseInt(idStr);
 
                 if (id != -1) {
-                    taskManager.deleteSubtaskForId(id);
+                    taskManager.deleteEpicById(id);
                     sendText(exchange, "Задача с id: " + id + " удалена", 200);
                 }
             } else {

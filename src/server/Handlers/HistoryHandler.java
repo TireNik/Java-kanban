@@ -1,4 +1,4 @@
-package server;
+package server.Handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class PrioritizedHandler extends BaseHttpHandler {
+public class HistoryHandler extends BaseHttpHandler {
     private final TaskManager taskManager;
     Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
@@ -21,7 +21,7 @@ public class PrioritizedHandler extends BaseHttpHandler {
             .setPrettyPrinting()
             .create();
 
-    public PrioritizedHandler(TaskManager taskManager) {
+    public HistoryHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -30,8 +30,8 @@ public class PrioritizedHandler extends BaseHttpHandler {
         try {
             String method = exchange.getRequestMethod();
             if (method.equals("GET")) {
-                List<Task> prioritized = taskManager.getPrioritizedTasks();
-                String response = gson.toJson(prioritized);
+                List<Task> history = taskManager.getHistory();
+                String response = gson.toJson(history);
                 sendText(exchange, response, 200);
             }
         } catch (Exception e) {
