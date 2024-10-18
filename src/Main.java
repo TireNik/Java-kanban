@@ -59,20 +59,5 @@ public class Main {
                 Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 10, 22, 18, 18));
 
-//        taskManager.updateSubtask(upSubTask1);
-//
-//        SubTask subTask2 = new SubTask(null,"ПОДЗАДАЧА 2", "Subtask ОПИСАНИЕ 2", Progress.NEW,
-//                4,
-//                Duration.ofMinutes(110),
-//                LocalDateTime.of(2024, 10, 29, 18, 18));
-//
-//        taskManager.addSubtask(subTask2);
-//
-//        System.out.println(taskManager.getPrioritizedTasks());
-//        System.out.println(taskManager.getAllTasks());
-//        System.out.println(taskManager.getAllSubTasks());
-//        System.out.println(taskManager.getAllEpics());
-////        taskManager.deleteAllTasks();
-
     }
 }
