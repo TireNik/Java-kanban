@@ -2,7 +2,6 @@ package server.Handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
 import exeptions.NotFoundException;
 import manager.TaskManager;
@@ -51,10 +50,6 @@ public class EpicHandler extends BaseHttpHandler {
                     }
                 }
                 case "POST" -> handelPost(exchange);
-//                {
-//                    "name": "",
-//                        "description": ""
-//                }
                 case "DELETE" -> handleDelete(exchange);
                 default -> sendNotFound(exchange);
             }
@@ -106,28 +101,50 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     private void handelPost(HttpExchange exchange) throws IOException {
+        String query = exchange.getRequestURI().getQuery();
+        String path = exchange.getRequestURI().getPath();
 
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-        System.out.println("Body " + body);
-        try {
-            JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
-            String name = jsonObject.get("name").getAsString();
-            String description = jsonObject.get("description").getAsString();
+        Epic epic = gson.fromJson(body, Epic.class);
 
-            Epic epic = new Epic(1, name, description);
+        String name = epic.getName();
+        String description = epic.getDescription();
 
-            System.out.println("Deserialized " + epic);
 
-            taskManager.addEpic(epic);
-            String response = gson.toJson(epic);
-            sendText(exchange, response, 201);
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendText(exchange, "Server Error", 500);
+        if (Pattern.matches("/epics", path)) {
+            if (query != null && query.startsWith("id=")) {
+                try {
+                    String idStr = query.split("=")[1];
+                    int id = Integer.parseInt(idStr);
+
+                    epic.setId(id);
+
+                    taskManager.updateEpic(epic);
+
+                    String response = gson.toJson(epic);
+                    System.out.println(response);
+                    sendText(exchange, response, 200);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sendText(exchange, "Server Error", 500);
+                }
+            } else {
+                try {
+                    Epic addEpic = new Epic(null, name, description);
+
+                    taskManager.addEpic(addEpic);
+                    String response = gson.toJson(addEpic);
+                    sendText(exchange, response, 201);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sendText(exchange, "Server Error", 500);
+                }
+            }
         }
     }
+
 
     private void handleDelete(HttpExchange exchange) throws IOException {
         try {
