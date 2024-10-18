@@ -35,8 +35,7 @@ public class TaskHandler extends BaseHttpHandler {
             String method = exchange.getRequestMethod();
             String query = exchange.getRequestURI().getQuery();
             switch (method) {
-                case "GET" ->
-                {
+                case "GET" -> {
                     if (Pattern.matches("/tasks", path)) {
                         if (query != null && query.startsWith("id=")) {
                             handleGetById(exchange);
@@ -55,7 +54,7 @@ public class TaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handleGetById (HttpExchange exchange) throws IOException {
+    private void handleGetById(HttpExchange exchange) throws IOException {
         try {
             String query = exchange.getRequestURI().getRawQuery();
             if (query != null && query.startsWith("id=")) {
@@ -76,7 +75,7 @@ public class TaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handelPost (HttpExchange exchange) throws IOException {
+    private void handelPost(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
         String path = exchange.getRequestURI().getPath();
 
@@ -116,7 +115,7 @@ public class TaskHandler extends BaseHttpHandler {
 
     }
 
-    private void handleDelete (HttpExchange exchange) throws IOException {
+    private void handleDelete(HttpExchange exchange) throws IOException {
         try {
             String query = exchange.getRequestURI().getRawQuery();
             if (query != null && query.startsWith("id=")) {
